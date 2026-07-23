@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get In Touch — Portfolio Inquiry</title>
+  <style>
+    /* ---------- Layout ---------- */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ---------- Typography ---------- */
+    h1 {
+      font-size: 1.6rem;
+      margin: 0 0 5px 0;
+    }
+
+    .subtitle {
+      color: #666;
+      margin: 0 0 25px 0;
+      font-size: 0.95rem;
+    }
+
+    /* ---------- Form fields ---------- */
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .hint {
+      font-weight: normal;
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    /* Two-column row for short fields */
+    .row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .row .field {
+      flex: 1;
+    }
+
+    /* ---------- Buttons ---------- */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 12px 22px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #2c7be5;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #eee;
+      color: #333;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    /* ---------- Messages ---------- */
+    .message {
+      padding: 12px 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .message.success {
+      background: #e6f9ec;
+      color: #1d7a3d;
+      display: block;
+    }
+
+    .message.error {
+      background: #fdecea;
+      color: #b3261e;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Get In Touch</h1>
+    <p class="subtitle">Quick form — most people finish under a minute. All fields marked * are required.</p>
+
+    <div id="formMessage" class="message"></div>
+
+    <form id="inquiryForm" novalidate>
+      <!-- Subject: picked first so the rest of the form matches intent -->
+      <div class="field">
+        <label for="subject">What can I help you with? * <span class="hint">(pick one)</span></label>
+        <select id="subject" name="subject" required>
+          <option value="" disabled selected>— Choose a subject —</option>
+          <option value="feedback">Give feedback on my work</option>
+          <option value="about">Ask a question about me</option>
+          <option value="faq">Suggest a FAQ question</option>
+          <option value="hire">Discuss a project / hire me</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+
+      <!-- About you: name + contact in one row -->
+      <div class="row">
+        <div class="field">
+          <label for="name">Your name *</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="field">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="age">Age <span class="hint">(optional)</span></label>
+          <input type="number" id="age" name="age" min="0" max="120">
+        </div>
+        <div class="field">
+          <label for="gender">Gender <span class="hint">(optional)</span></label>
+          <select id="gender" name="gender">
+            <option value="">— Prefer not to say —</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- How I should reply -->
+      <div class="field">
+        <label for="urgency">How soon would you like a reply? *</label>
+        <select id="urgency" name="urgency" required>
+          <option value="" disabled selected>— Select —</option>
+          <option value="day">Today (urgent)</option>
+          <option value="week">This week</option>
+          <option value="none">No rush</option>
+        </select>
+      </div>
+
+      <!-- The actual message -->
+      <div class="field">
+        <label for="message">Your message *</label>
+        <textarea id="message" name="message" rows="5" required placeholder="Tell me what's on your mind..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Submit</button>
+        <button type="button" class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    var form = document.getElementById('inquiryForm');
+    var msgBox = document.getElementById('formMessage');
+
+    function showMessage(text, type) {
+      msgBox.textContent = text;
+      msgBox.className = 'message ' + type;
+    }
+
+    // Controlled reset that also clears the success banner
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      form.reset();
+      msgBox.className = 'message';
+      msgBox.textContent = '';
+    });
+
+    // Submit handler — validates and gives feedback without a backend
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name = form.name.value.trim();
+      var email = form.email.value.trim();
+      var subject = form.subject.value;
+      var urgency = form.urgency.value;
+      var message = form.message.value.trim();
+
+      if (!name || !email || !subject || !urgency || !message) {
+        showMessage('Please fill in all required (*) fields before submitting.', 'error');
+        return;
+      }
+
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!emailOk) {
+        showMessage("That email doesn't look right — please check it.", 'error');
+        return;
+      }
+
+      showMessage('Thanks, ' + name + '! Your inquiry was received. I will reply ' +
+        (urgency === 'day' ? 'as soon as possible today.' :
+        urgency === 'week' ? 'later this week.' : 'when I can — no rush on your end.'),
+        'success');
+      form.reset();
+    });
+  </script>
+</body>
+</html>
